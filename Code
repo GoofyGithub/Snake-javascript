@@ -1,177 +1,202 @@
-var gameBoardSize = 40;
-var gamePoints = 0;
-var gameSpeed = 100;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock, Paper, Scissor</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
 
-$(document).ready(function () {
-    console.log("Ready Player One!");
-    createBoard();
-    $(".btn").click(function() {
-        startGame();
-    });
-});
+    <script>
+        let player1Score = 0;
+        let player2Score = 0;
+        let turn = 1;
 
-var Snake = {
-    position: [[20, 20], [20, 19], [20, 18]], // snake start position
-    size: 3,
-    direction: "r",
-    alive: true
-}
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
 
-var Food = {
-    position: [],
-    present: false
-}
+        const WIDTH = 200;
+        const HEIGHT = 200;
+        const MAX_RANGE = 10;
+        const ROCK = 0;
+        const PAPER = 1;
+        const SCISSOR = 2;
+        const SCISSORS_BEAT_ROCK = 1;
+        const ROCK_BEATS_SCISSOR = 1;
+        const PAPER_BEATS_ROCK = -1;
 
-function createBoard() {
-    $("#gameBoard").empty();
-    var size = gameBoardSize;
-    
-    for (i = 0; i < size; i++) {
-        $("#gameBoard").append('<div class="row"></div>');
-        for (j = 0; j < size; j++) {
-            $(".row:last-child").append('<div class="pixel"></div>');
+        // Draw the canvas
+        ctx.fillStyle = 'lightgray';
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+        const ROCK_ARROW_X = 15;
+        const ROCK_ARROW_Y = 150;
+        const PAPER_ARROW_X = 100;
+        const PAPER_ARROW_Y = 150;
+        const SCISSORS_ARROW_X = 180;
+        const SCISSORS_ARROW_Y = 150;
+
+        // Draw the arrows
+        ctx.beginPath();
+            ctx.moveTo(ROCK_ARROW_X, ROCK_ARROW_Y);
+    ctx.lineTo(ROCK_ARROW_X + 15, ROCK_ARROW_Y);
+    ctx.moveTo(PAPER_ARROW_X, PAPER_ARROW_Y);
+    ctx.lineTo(PAPER_ARROW_X + 15, PAPER_ARROW_Y);
+    ctx.moveTo(SCISSORS_ARROW_X, SCISSORS_ARROW_Y);
+    ctx.lineTo(SCISSORS_ARROW_X + 15, SCISSORS_ARROW_Y);
+    ctx.stroke();
+
+    function update() {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        drawArrows();
+        drawImages();
+    }
+
+    function drawImages() {
+        switch (turn) {
+            case 1:
+                ctx.beginPath();
+                ctx.drawImage(rockImage, 0, 0);
+                ctx.stroke();
+                break;
+            case 2:
+                ctx.beginPath();
+                ctx.drawImage(paperImage, 0, 0);
+                ctx.stroke();
+                break;
+            case 3:
+                ctx.beginPath();
+                ctx.drawImage(scissorsImage, 0, 0);
+                ctx.stroke();
+                break;
+            default:
+                ctx.beginPath();
+                ctx.drawImage(null, 0, 0);
+                ctx.stroke();
         }
     }
-}
 
-function moveSnake() {
-  var head = Snake.position[0].slice();
+    function drawArrows() {
+        ctx.beginPath();
+        ctx.moveTo(ROCK_ARROW_X, ROCK_ARROW_Y);
+        ctx.lineTo(PAPER_ARROW_X, PAPER_ARROW_Y);
+        ctx.lineTo(SCISSORS_ARROW_X, SCISSORS_ARROW_Y);
+        ctx.stroke();
+        ctx.beginPath();
+            ctx.moveTo(ROCK_ARROW_X, ROCK_ARROW_Y);
+    ctx.lineTo(PAPER_ARROW_X, PAPER_ARROW_Y);
+    ctx.lineTo(SCISSORS_ARROW_X, SCISSORS_ARROW_Y);
+    ctx.stroke();
 
-  switch (Snake.direction) {
-    case 'r':
-      head[1] += 1;
-      break;
-    case 'l':
-      head[1] -= 1;
-      break;
-    case 'u':
-      head[0] -= 1;
-      break;
-    case 'd':
-      head[0] += 1;
-      break;
-  }
-
-  // check after head is moved
-  if (alive(head)) {
-    // draw head
-    $(".row:nth-child(" + head[0] + ") > .pixel:nth-child(" + head[1] + ")").addClass("snakePixel");
-
-    // draw rest of body loop
-    for (var i = 0; i < Snake.size; i++) {
-      $(".row:nth-child(" + Snake.position[i][0] + ") > .pixel:nth-child(" + Snake.position[i][1] + ")").addClass("snakePixel");
+    function update() {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        drawArrows();
+        drawImages();
     }
 
-    // if head touches food
-    if (head.every(function(e,i) {
-      return e === Food.position[i];
-    })) {
-      Snake.size++;
-      Food.present = false;
-      gamePoints += 5;
-      $(".row:nth-child(" + Food.position[0] + ") > .pixel:nth-child(" + Food.position[1] + ")").removeClass("foodPixel");
-      $("#score").html("Score: "+gamePoints)
-        if (gamePoints % 16 == 0 && gameSpeed > 10) { gameSpeed -= 5; };
-    } else {
-      $(".row:nth-child(" + Snake.position[Snake.size-1][0] + ") > .pixel:nth-child(" + Snake.position[Snake.size-1][1] + ")").removeClass("snakePixel");
-      Snake.position.pop();
+    function drawImages() {
+        switch (turn) {
+            case 1:
+                ctx.beginPath();
+                ctx.drawImage(rockImage, 0, 0);
+                ctx.stroke();
+                break;
+            case 2:
+                ctx.beginPath();
+                ctx.drawImage(paperImage, 0, 0);
+                ctx.stroke();
+                break;
+            case 3:
+                ctx.beginPath();
+                ctx.drawImage(scissorsImage, 0, 0);
+                ctx.stroke();
+                break;
+            default:
+                ctx.beginPath();
+                ctx.drawImage(null, 0, 0);
+                ctx.stroke();
+        }
     }
-    Snake.position.unshift(head);
-  } else {
-    gameOver();
-  }
-}
 
-
-function generateFood() {
-    if (Food.present === false) {
-        Food.position = [Math.floor((Math.random()*40) + 1), Math.floor((Math.random()*40) + 1)]
-        Food.present = true;
-        console.log("Food at: "+Food.position);
-        $(".row:nth-child(" + Food.position[0] + ") > .pixel:nth-child(" + Food.position[1] + ")").addClass("foodPixel");
+    function drawArrows() {
+        ctx.beginPath();
+        ctx.moveTo(ROCK_ARROW_X, ROCK_ARROW_Y);
+        ctx.lineTo(PAPER_ARROW_X, PAPER_ARROW_Y);
+        ctx.lineTo(SCISSORS_ARROW_X, SCISSORS_ARROW_Y);
+        ctx.stroke();
     }
-}
 
-function keyPress() {
-    $(document).one("keydown", function(key) {
-        switch(key.which) {
-            case 37: // left arrow
-                if (Snake.direction != "r") {Snake.direction = "l";}
+    const rockImage = new Image();
+    rockImage.src = 'img/rock.png';
+
+    const paperImage = new Image();
+    paperImage.src = 'img/paper.png';
+
+    const scissorsImage = new Image();
+    scissorsImage.src = 'img/scissors.png';
+
+        const rockSound = new Audio('img/rock.mp3');
+    
+    function playRockSound() {
+        rockSound.play();
+    }
+
+    const paperSound = new Audio('img/paper.mp3');
+    function playPaperSound() {
+        paperSound.play();
+    }
+
+    const scissorsSound = new Audio('img/scissors.mp3');
+    function playScissorsSound() {
+        scissorsSound.play();
+    }
+    
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    
+    const ROCK_DELAY = 200;
+    const PAPER_DELAY = 300;
+    const SCISSORS_DELAY = 100;
+
+    function randomWait(delay) {
+        return new Promise(resolve => setTimeout(Resolve, Math.floor(Math.random() * delay) * 1000));
+    }
+
+    const AI_WAIT = randomWait(SCISSORS_DELAY);
+    const ROCK_WAIT = randomWait(ROCK_DELAY);
+    const PAPER_WAIT = randomWait(PAPER_DELAY);
+
+    function wait() {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        drawArrows();
+        drawImages();
+    }
+
+    function onKeyDown(e) {
+        switch (e.key) {
+            case 'R':
+                turn = 1;
+                playRockSound();
+                wait();
                 break;
-            case 38: // up arrow
-                if (Snake.direction != "d") {Snake.direction = "u";}
+            case 'P':
+                turn = 2;
+                playPaperSound();
+                wait();
                 break;
-            case 39: // right arrow
-                if (Snake.direction != "l") {Snake.direction = "r";}
-                break;
-            case 40: // down arrow
-                if (Snake.direction != "u") {Snake.direction = "d";}
+            case 'S':
+                turn = 3;
+                playScissorsSound();
+                wait();
                 break;
         }
-    });
-}
-
-function gameLoop() {
-    setTimeout(function() {
-        keyPress();
-        generateFood();
-        moveSnake();
-        if (Snake.alive) {gameLoop(); }
-    }, gameSpeed);
-}
-
-function alive(head) {
-  // head check
-  if (head[0] < 1 || head[0] > 40 || head[1] < 1 || head[1] > 40) {
-    return false;
-  }
-  // wall collision
-  if (Snake.position[0][0] < 1 || Snake.position[0][0] > 40 || Snake.position[0][1] < 1 || Snake.position[0][1] > 40) {
-    return false;
-  }
-  // self collision
-  for (var i = 1; i < Snake.size; i++) {
-    if ((Snake.position[0]).every(function(element,index) {
-      return element === Snake.position[i][index];
-    })) {
-      return false;
     }
-  }
-  return true;
-}
 
-function gameOver() {
-    Snake.alive = false;
-    console.log("Game Over!");
-    $(".overlay").show();
-    $("#gameOver").show();
-    var blink = function() {
-        $(".row:nth-child(" + Snake.position[0][0] + ") > .pixel:nth-child(" + Snake.position[0][1] + ")").toggleClass("snakePixel");
-    }
-    
-    var i = 0;
-    function blinkLoop() {
-        blink();
-        setTimeout(function() {
-            i++;
-            if (i < 10) { blinkLoop();}
-        }, 400);
-    }
-    blinkLoop();
-}
+    window.addEventListener('keydown', onKeyDown);
 
-function startGame() {
-    // reset game settings
-    Snake.size = 3;
-    Snake.position = [[20,20],[20,19],[20,18]];
-    Snake.direction = "r";
-    Snake.alive = true;
-    gameSpeed = 100;
-    gamePoints = 0;
-    Food.present = false;
-    
-    // start game
-    createBoard();
-    $(".overlay").hide();
-    gameLoop();
-}
+    function gameLoop() {
+        ctx.clearRect(0, 0, WIDTH
+
+
+
